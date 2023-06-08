@@ -1,15 +1,19 @@
-import { collection, query } from 'firebase/firestore';
-import { useEffect } from 'react';
-import { db } from './firebase.util';
+import { collection, onSnapshot, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { db } from "./firebase.util";
 
 function App() {
-  useEffect(()=>{
-    const {_path}= query(collection(db, 'task'));
-    console.log(_path);
-  },[])
-  return (
-    <div>hi</div>
-  );
+  const [task, setTask] = useState([]);
+  console.log(task);
+  useEffect(() => {
+    const q = query(collection(db, "task"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const tasks = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      setTask(tasks);
+    });
+    return unsubscribe;
+  }, []);
+  return <div>hi</div>;
 }
 
 export default App;
