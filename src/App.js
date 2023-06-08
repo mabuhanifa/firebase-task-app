@@ -9,20 +9,24 @@ function App() {
   const [date, setDate] = useState("");
 
   // Create todo
-  const createTodo = async (e) => {
-    e.preventDefault(e);
-    if (title || description || date === "") {
-      alert("Please enter a valid task");
-      return;
+  const createTodo = async () => {
+    if (title.length && description.length && date.length) {
+      await addDoc(collection(db, "task"), {
+        title,
+        description,
+        date,
+      });
+      setTitle("");
+      setDescription("");
+      setDate("");
+    } else {
+      alert("Please fill all the fields");
+      setTitle("");
+      setDescription("");
+      setDate("");
     }
-    await addDoc(collection(db, "todos"), {
-      title,
-      description,
-    });
-    setTitle("");
-    setDescription("");
-    setDate("");
   };
+
   console.log({
     title,
     description,
@@ -44,6 +48,7 @@ function App() {
           type="text"
           placeholder="title"
           className="bg-gray-300 px-5 py-3 my-3 rounded"
+          required
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
@@ -52,6 +57,7 @@ function App() {
           type="text"
           placeholder="description"
           className="bg-gray-300 px-5 py-3 my-3 rounded"
+          required
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
@@ -59,6 +65,7 @@ function App() {
         <input
           type="date"
           className="bg-gray-300 px-5 py-3 my-3 rounded"
+          required
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
@@ -69,6 +76,16 @@ function App() {
         >
           Create Task
         </button>
+      </div>
+      <div>
+        {tasks &&
+          tasks.map((task) => (
+            <div key={task.id}>
+              <h1>{task.title}</h1>
+              <p>{task.description}</p>
+              <p>{task.date}</p>
+            </div>
+          ))}
       </div>
     </div>
   );
