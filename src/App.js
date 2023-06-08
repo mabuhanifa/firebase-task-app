@@ -1,4 +1,11 @@
-import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "./firebase.util";
 
@@ -9,7 +16,7 @@ function App() {
   const [date, setDate] = useState("");
 
   // Create todo
-  const createTodo = async () => {
+  const createTask = async () => {
     if (title.length && description.length && date.length) {
       await addDoc(collection(db, "task"), {
         title,
@@ -26,12 +33,9 @@ function App() {
       setDate("");
     }
   };
-
-  console.log({
-    title,
-    description,
-    date,
-  });
+  const deleteTask = async (id) => {
+    await deleteDoc(doc(db, "task", id));
+  };
 
   useEffect(() => {
     const q = query(collection(db, "task"));
@@ -71,7 +75,7 @@ function App() {
       </div>
       <div>
         <button
-          onClick={createTodo}
+          onClick={createTask}
           className="bg-blue-600 text-white font-bold px-5 py-3 my-3 rounded"
         >
           Create Task
@@ -84,6 +88,12 @@ function App() {
               <h1>{task.title}</h1>
               <p>{task.description}</p>
               <p>{task.date}</p>
+              <button
+                className="bg-red-600 text-white font-bold px-5 py-3 my-3 rounded"
+                onClick={() => deleteTask(task.id)}
+              >
+                delete
+              </button>
             </div>
           ))}
       </div>
